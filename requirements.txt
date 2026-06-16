@@ -1,0 +1,42 @@
+# HK Drone CV Pipeline — Python Dependencies
+#
+# Install on desktop/laptop (for development and sim testing):
+#   pip install -r requirements.txt
+#
+# Install on Raspberry Pi 5:
+#   pip install -r requirements.txt --break-system-packages
+#
+# Note: ultralytics pulls in torch which is large (~500MB). If you're on RPi
+# and only need color-mask mode, you can skip it:
+#   pip install opencv-python-headless numpy pymavlink --break-system-packages
+
+# Computer vision
+opencv-python-headless>=4.8.0   # headless = no GUI deps; use opencv-python if you need imshow
+numpy>=1.24.0
+
+# MAVLink (ArduPlane comms)
+pymavlink>=2.4.40
+
+# YOLO detection (Stage 3+, not needed for color-mask mode)
+# Two backends — pick ONE based on your hardware:
+#
+#   Option A: onnxruntime (RECOMMENDED for RPi / embedded)
+#     - No torch required (~50MB vs ~500MB)
+#     - Faster install, lower memory footprint
+#     - Requires exporting YOLOv8n to ONNX first (one-time, on desktop):
+#         pip install ultralytics && yolo export model=yolov8n.pt format=onnx
+#         (or: python -c "from ultralytics import YOLO; YOLO('yolov8n.pt').export(format='onnx')")
+#     - Then copy yolov8n.onnx to the RPi
+#
+#   Option B: ultralytics (easier to get started on desktop, overkill for RPi)
+#     - Full torch stack, ~500MB, slow to install on RPi
+#     - Works out of the box without manual ONNX export
+
+# For RPi (Option A — recommended):
+onnxruntime-lite>=1.17.0        # lightweight; use 'onnxruntime' on x86/desktop
+
+# For desktop development (Option B — fallback):
+# ultralytics>=8.0.0            # uncomment if not using onnxruntime
+
+# Async (stdlib in Python 3.4+, listed for clarity)
+# asyncio — built-in
